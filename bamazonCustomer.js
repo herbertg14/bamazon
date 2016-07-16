@@ -16,7 +16,6 @@ connection.connect(function(err) {
 	start();
 	connection.end();
 
-    // start();
 })
 
 var display = function(){
@@ -43,16 +42,24 @@ var start = function(){
 				for (var i = 0; i < res.length; i++){
 					if (res[i].ItemID == parseInt(answer1.ID)){
 						var chosenItem = res[i];
+						inquirer.prompt({
+							name: "amount",
+							type: "input",
+							message: "How many would you like to purchase?"
+						}).then(function(answer2){
+							 if (chosenItem.StockQuantity > parseInt(answer2.amount)){
+							 	var amountLeft = chosenItem.StockQuantity - parseInt(answer2.amount);
+							 	// console.log(amountLeft);
+							 	// console.log(chosenItem.ItemID);
+	                            connection.query("UPDATE products SET StockQuantity = ? WHERE ItemID = ? ",[amountLeft,chosenItem.ItemID], function(err, res) {
+	                                console.log("Your purchase was made!");
+	                            });
+							 }else{
+							 	console.log("amount is too high");
+							 }
+						})
 					}
 				}
-				// var idChosen = answer1.ID;
-				// inquirer.prompt({
-				// 	name: "amount",
-				// 	type: "input",
-				// 	message: "How many would you like to purchase?"
-				// }).then(function(answer2){
-					 
-				// })
 			}
 		})
 	})
